@@ -1,2 +1,0 @@
-secretKey = 'S1tom0R3lCkvwIQNjuKOGM4IIbW9+1WYB0z0zXqP'
-publicKey = 'AKIAJRFUYM7RWTDBHQKQ'
