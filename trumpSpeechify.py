@@ -3,10 +3,13 @@ import boto3
 from boto3.dynamodb.conditions import Key
 import decimal
 import pyglet
+import datetime
 
-os.environ["AWS_ACCESS_KEY_ID"] = 'AKIAJRFUYM7RWTDBHQKQ'
+from keys import secretKey, publicKey
 
-os.environ["AWS_SECRET_ACCESS_KEY"] = 'S1tom0R3lCkvwIQNjuKOGM4IIbW9+1WYB0z0zXqP'
+os.environ["AWS_ACCESS_KEY_ID"] = publicKey
+
+os.environ["AWS_SECRET_ACCESS_KEY"] = secretKey
 
 AWS_REGION = 'us-east-1'
 
@@ -40,8 +43,8 @@ GDP_QoQ = {"Argentina" : "ARADTOTQ Index",
             "South Africa" : "SAGDPANN Index",
             "Turkey" : "TUGPCOQS Index",
             "United Kingdom" : "UKGRABIQ Index"}
-pathToTrump = [] #128 trump clips with paths as Strings
 
+pathToTrump = []
 
 def countryToDataList(country):
     years = ['2006', '2007', '2008', '2009', '2010', '2011', '2012', '2013']
@@ -51,29 +54,36 @@ def countryToDataList(country):
         data = table.query(KeyConditionExpression = Key('Ticker').eq(GDP_YoY[country]))['Items']
         for item in data:
             val = int(abs(item['Value']) *1000)
-            print val
+            print "*"
             valueList.append(val)
         data = table.query(KeyConditionExpression = Key('Ticker').eq(GDP_QoQ[country]))['Items']
         for item in data:
             val = int(abs(item['Value']) *1000)
-            print val
             valueList.append(val)
-    print str(len(valueList))+ " Length"
+            print "*"
     return valueList
 
-def toAudio(valueList):
+def toAudio(valueList, audioPath):
+    string = 'ffmpeg -i \"concat:'
+    path = ''
     for number in valueList:
-        path = "./sounds/trump.wav|" + pathToTrump[number%128]
-        os.system('ffmpeg -i \"concat:%s\" ./sounds/trump.wav')
+        if path != '':
+            path += '|'        
+        path +=   pathToTrump[number%len(pathToTrump)]
+    string += path + '\" ' + audioPath
+    os.system(string)
 
 
 def main():
+    for root, dirs, files in os.walk(r'./sounds'):
+        for file in files:
+            if file.endswith('.mp3'):
+                pathToTrump.append('./sounds/'+file)
+    newString = './speeches/trump' + datetime.datetime.now().strftime("%I%M%p-%B-%d-%Y") + ".mp3"
+    os.system('touch ' + newString)
     print "Please Select one of the following countries: (They are case sensative)"
     country = raw_input("Argentina, Austrailia, Brazil, Canada, France, Germany, India,\nItaly, Japan, South Korea, South Africa, Turkey, United Kingdom\n")
-    countryToDataList(country)
-    #song = pyglet.media.load('./sounds/trump.wav')
-    #song.play()
-    #pyglet.app.run()
-    exit()
+    toAudio(countryToDataList(country), newString)
+    print "Done"
 
 main()
