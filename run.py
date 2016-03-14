@@ -24,8 +24,6 @@ def call(number):
     auth_token  = "99503bbf9c4e89924dc8a247f5304a68"
     client = TwilioRestClient(account_sid, auth_token)
  
-    
-    #phones = [7322725973,7322665998,5164136757,7329666086,7327032645,2018952456,2019935587,2017053156]
 
     num = randint(0,12)
          
