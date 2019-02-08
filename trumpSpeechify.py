@@ -74,7 +74,7 @@ def toAudio(valueList, audioPath):
     os.system(string)
 
 
-def main():
+if __name__ == '__main__':
     for root, dirs, files in os.walk(r'./sounds'):
         for file in files:
             if file.endswith('.mp3'):
@@ -85,5 +85,3 @@ def main():
     country = raw_input("Argentina, Austrailia, Brazil, Canada, France, Germany, India,\nItaly, Japan, South Korea, South Africa, Turkey, United Kingdom\n")
     toAudio(countryToDataList(country), newString)
     print "Done"
-
-main()
